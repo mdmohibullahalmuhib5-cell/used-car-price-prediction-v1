@@ -72,7 +72,7 @@ with st.sidebar:
 
     st.markdown("---")
     st.write("**Developer:** MD MOHIBULLAH Al MUHIB (莫哈)")
-    st.write("**Topic:** 17 - Second-hand Price Prediction")
+    st.write("**Project:** Second-hand Price Prediction")
     st.write("**Tech Stack:** Python, Pandas, Scikit-Learn, XGBoost, LightGBM, Streamlit")
 
     st.markdown("---")
@@ -83,7 +83,9 @@ with st.sidebar:
 
 # --- MAIN PAGE ---
 st.markdown('<p class="main-header">🚗 Used Car Price Predictor</p >', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">Enter the vehicle details below to get an AI-powered price estimate.</p >',
+
+# ✅ UPDATED SUB-HEADER LINE
+st.markdown('<p class="sub-header">Get an instant, data-driven price estimate for any used car.</p >',
             unsafe_allow_html=True)
 
 st.divider()
@@ -123,11 +125,23 @@ with tab_predict:
             mileage_kmpl = st.number_input("Mileage (in kmpl)", 1.0, 50.0, 15.0, 0.1)
             owner_count = st.number_input("Owner Count", 1, 5, 1)
 
-            # ➕ Quick Insight Chart to fill empty space
+            # Quick Insight Chart to fill empty space
             st.markdown("---")
-            st.markdown("**📊 Quick Insight: Top 5 Brands by Avg Price**")
+            st.markdown("**📊 Top 5 Brands by Avg Price**")
             brand_avg_quick = df.groupby('brand')['price_usd'].mean().sort_values(ascending=False).head(5)
-            st.bar_chart(brand_avg_quick)
+
+            fig_quick, ax_quick = plt.subplots(figsize=(6, 4))
+            colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
+            bars = ax_quick.barh(brand_avg_quick.index, brand_avg_quick.values, color=colors)
+            ax_quick.set_xlabel('Average Price (USD)', fontsize=9)
+            ax_quick.tick_params(axis='both', labelsize=9)
+
+            for bar in bars:
+                width = bar.get_width()
+                ax_quick.text(width + 100, bar.get_y() + bar.get_height() / 2,
+                              f'${width:,.0f}', ha='left', va='center', fontsize=8)
+
+            st.pyplot(fig_quick)
 
         with col2:
             st.markdown("**Engine & Brand**")
@@ -144,7 +158,7 @@ with tab_predict:
             insurance_valid = st.selectbox("Insurance Valid", ["Yes", "No"])
             accidents_reported = st.number_input("Accidents Reported", 0, 5, 0)
 
-            # Currency Selector (এখন ডান দিকের কলামে)
+            # Currency Selector
             st.markdown("---")
             selected_currency = st.selectbox("💵 Select Currency", list(exchange_rates.keys()))
 
