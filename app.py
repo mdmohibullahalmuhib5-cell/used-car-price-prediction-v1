@@ -3,6 +3,7 @@ import pandas as pd
 import pickle
 import os
 import json
+import time
 import matplotlib.pyplot as plt
 import seaborn as sns
 import shap
@@ -83,8 +84,6 @@ with st.sidebar:
 
 # --- MAIN PAGE ---
 st.markdown('<p class="main-header">🚗 Used Car Price Predictor</p >', unsafe_allow_html=True)
-
-# ✅ UPDATED SUB-HEADER LINE
 st.markdown('<p class="sub-header">Get an instant, data-driven price estimate for any used car.</p >',
             unsafe_allow_html=True)
 
@@ -125,7 +124,7 @@ with tab_predict:
             mileage_kmpl = st.number_input("Mileage (in kmpl)", 1.0, 50.0, 15.0, 0.1)
             owner_count = st.number_input("Owner Count", 1, 5, 1)
 
-            # Quick Insight Chart to fill empty space
+            # Quick Insight Chart
             st.markdown("---")
             st.markdown("**📊 Top 5 Brands by Avg Price**")
             brand_avg_quick = df.groupby('brand')['price_usd'].mean().sort_values(ascending=False).head(5)
@@ -158,11 +157,15 @@ with tab_predict:
             insurance_valid = st.selectbox("Insurance Valid", ["Yes", "No"])
             accidents_reported = st.number_input("Accidents Reported", 0, 5, 0)
 
-            # Currency Selector
             st.markdown("---")
             selected_currency = st.selectbox("💵 Select Currency", list(exchange_rates.keys()))
 
     if st.button("🔍 Predict Price", use_container_width=True, type="primary"):
+
+        # ---- LOADING ANIMATION ----
+        with st.spinner("🔄 Analyzing vehicle data... Please wait..."):
+            time.sleep(2)  # 2 seconds delay for animation
+
         input_data = {
             'make_year': [make_year],
             'car_age': [2026 - make_year],
@@ -249,6 +252,9 @@ with tab_predict:
                 st.download_button("📥 Download Prediction Report", csv, f"prediction_{brand}_{make_year}.csv",
                                    "text/csv")
                 st.markdown('</div>', unsafe_allow_html=True)
+
+            # ---- CELEBRATION ANIMATION ----
+            st.balloons()
 
         except Exception as e:
             st.error(f"An error occurred during prediction: {e}")
